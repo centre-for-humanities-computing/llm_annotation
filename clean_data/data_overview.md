@@ -9,13 +9,23 @@ No tweet IDs were part of the original csv-files from OSF.
 
 English columns: Tweet, human, GPT3.5, GPT4, GPT4_Turbo
 - Raw(?) tweet text
-- human annotation, 1: anger, 2: sadness, 3: sadness, 4: optimism
+- human annotation, 1: anger, 2: joy, 3: sadness, 4: optimism
 - GPT3.5:GPT4_Turbo -> gpt annotations, same labelling scheme as human
 
-Indonesian columns: Tweet, human, GPT3.5, GPT4
+Indonesian columns: Tweet, human, GPT3.5, GPT4 (NB: no file existed for GPT4_Turbo in Indonesian.)
 - Preprocessed tweet text 
 - human annottaion, 1: anger, 2: fear, 3: sadness, 4: love, 5: joy/happy
 
 Note: Indonesian had different emotions than the English one. Also, inconsitency in whether "happy" or "joy" was used. 
-NB: no file existed for GPT4_Turbo in Indonesian. 
 
+
+### moral foundations in reddit comments
+One file with reddit comments in English
+
+Columns: 
+- text: the reddit comment
+- Care,Equality,Proportionality,Loyalty,Authority,Purity,Thin Morality,Non-Moral,is_moral: human annotations, 0's and 1's, one text can have multiple 1's 
+- GPT4_Authority,GPT4_Care,GPT4_Equality,GPT4_Loyalty,GPT4_MoralSentiment,GPT4_Purity,GPT4_Proportionality: GPT4 annotations 
+- GPT4-Turbo_Authority,GPT4-Turbo_Equality,GPT4-Turbo_Loyalty,GPT4-Turbo_MoralSentiment,GPT4-Turbo_Proportionality,GPT4-Turbo_Purity: GPT4-Turbo annotations
+
+NB: Care not annotated with GPT4-Turbo
