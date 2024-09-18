@@ -41,5 +41,15 @@ Columns:
 - GPT4-Turbo_Sentiment,GPT4-Turbo_Anger,GPT4-Turbo_Joy,GPT4-Turbo_Sadness,GPT4-Turbo_Fear: GPT4-Turbo annotations
 
 ### Offensiveness 
+Two files: one with English tweets and one with Turkish tweets.
+Annotated for offensiveness - 1's and 0's. 
 
+No official tweet IDs were included in the data. 
+
+Columns: 
+- tweet: the tweet text
+- human: the human annotation
+- GPT3:GPT4-Turbo: the gpt annotations
+
+NB: the Turkish .csv file has +3k tweets for GPT3 but only 1k for GPT4 and GPT4-Turbo 
 
