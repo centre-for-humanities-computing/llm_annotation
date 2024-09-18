@@ -49,7 +49,47 @@ No official tweet IDs were included in the data.
 Columns: 
 - tweet: the tweet text
 - human: the human annotation
-- GPT3:GPT4-Turbo: the gpt annotations
+- GPT3.5:GPT4-Turbo: the gpt annotations
 
-NB: the Turkish .csv file has +3k tweets for GPT3 but only 1k for GPT4 and GPT4-Turbo 
+NB: the Turkish .csv file has +3k tweets for GPT3.5 but only 1k for GPT4 and GPT4-Turbo 
+
+### Sentiment - polarity
+ One csv per language 
+ 1: positive, 2: neutral, 3: negative
+
+ Amharic:
+ - tweet, label names, human annotation, GPT3.5, GPT4, GPT4-Turbo annotations
+ - GPT annotations are only for 1k of the tweets but there are human annotations for 2k tweets
+ - NB: no tweets IDs part of the data
+
+Arabic:
+- ID, tweet, human annotation, GPT3.5, GPT4, GPT4-Turbo annotations
+- GPT4 and 4-Turbo annotations are only for first 1k tweets, there are 6.1k human and GPT3.5 annotations
+- NB: unsure whether IDs are official tweet IDs. 
+
+English:
+- ID, tweet, human annotation, GPT3.5, GPT4, GPT4-Turbo annotations
+- GPT4 and 4-Turbo annotations are only for first 1k tweets, there are +12k human and GPT3.5 annotations
+- NB: unsure whether IDs are official tweet IDs. 
+
+Hausa:
+- tweet,label names, human annotations, GPT3.5, GPT4, GPT4-Turbo
+- NB: no tweet IDs part of the data 
+
+Igbo:
+- tweet,label,human,GPT3.5,GPT4,GPT4-Turbo
+- NB: no tweet IDs part of the data 
+
+ Kinyarwanda:
+- tweet,human,GPT3.5,GPT4,GPT4-Turbo
+- NB: no tweet IDs 
+
+Swahili:
+- tweet,human,GPT3.5,GPT4,GPT4-Turbo
+- NB: no tweet IDs 
+
+Tsonga
+- tweet,label,human,GPT3.5,GPT4,GPT4-Turbo
+- NB: no tweet IDs
+
 
