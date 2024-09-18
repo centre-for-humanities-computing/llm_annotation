@@ -29,3 +29,17 @@ Columns:
 - GPT4-Turbo_Authority,GPT4-Turbo_Equality,GPT4-Turbo_Loyalty,GPT4-Turbo_MoralSentiment,GPT4-Turbo_Proportionality,GPT4-Turbo_Purity: GPT4-Turbo annotations
 
 NB: Care not annotated with GPT4-Turbo
+
+### Sentiment and emotion in news headlines - Likert scales (1-7)
+One file with news headlines in English
+
+Columns: 
+- text: the headline 
+- sentiment,anger,fear,joy,sadness: human annotations, mean(?) of multiple annotators
+- GPT3.5_Sentiment,GPT3.5_Anger,GPT3.5_Joy,GPT3.5_Sadness,GPT3.5_Fear: GPT3.5 annotations
+- GPT4_Sentiment,GPT4_Anger,GPT4_Joy,GPT4_Sadness,GPT4_Fear: GPT4 annotations
+- GPT4-Turbo_Sentiment,GPT4-Turbo_Anger,GPT4-Turbo_Joy,GPT4-Turbo_Sadness,GPT4-Turbo_Fear: GPT4-Turbo annotations
+
+### Offensiveness 
+
+
