@@ -88,8 +88,45 @@ Swahili:
 - tweet,human,GPT3.5,GPT4,GPT4-Turbo
 - NB: no tweet IDs 
 
-Tsonga
+Tsonga:
 - tweet,label,human,GPT3.5,GPT4,GPT4-Turbo
 - NB: no tweet IDs
 
+Twi:
+- id,tweet,human,GPT3.5,GPT4,GPT4-Turbo
+- NB: ID is not tweet IDs, it's doc IDs 
+
+
+Yoruba:
+- id,tweet,human,GPT3.5,GPT4,GPT4-Turbo
+- NB: ID is not tweet IDs, it's doc IDs 
+
+
+
+
+## Gilardi et al
+
+There are six different annotation tasks: 
+- relevance-content: binary, is the tweet relevant for the content moderation issue
+- relevance-poli: binary, is the tweet relevant for political issues 
+- stance: 3 classes, stance regarding Section 230 (keep/repeal/neutral)
+- topic: 6 classes 
+- frames1: 3 classes, content moderation frames (problem/solution/neutral)
+- frames2: 14 classes, policy frames 
+
+There are four datasets:
+- tweets-old: random tweets posted in 2020-2021
+    - dataset A in the paper
+- tweets-new: random tweets posted in Jan 2023
+    - dataset C 
+- tweet-poli: tweets posted by members of US congress in 2017-2022
+    - dataset D 
+- news: news articles on content mdoeration 
+    - dataset B
+
+There are 11 different files - 1 per task per dataset
+- no dataset has done all tasks 
+
+
+NB: status_id columns was kept across datasets because it might be tweet IDs, but I'm not sure. 
 
