@@ -89,13 +89,15 @@ def fix_discrete_emotions(data_dir, out_dir) -> None:
 
 
 def fix_moral_foundations(data_dir, out_dir) -> None:
-    # setting path and getting filename
-    moral_p = Path(data_dir)
-    files = moral_p.glob("**/MFRC*")
+    # setting path and getting filenames
+    files = data_dir.glob("**/MFRC*")
 
     for i, file in enumerate(files):
         # read file
         df = pd.read_csv(file)
+
+        # get the name of the GPT annotation in this file
+        annotation = file.name.split("-")[1].capitalize()
 
         # from the first file we get the text and the human annotations
         if i == 0:
@@ -103,14 +105,15 @@ def fix_moral_foundations(data_dir, out_dir) -> None:
 
         # if preview is in the file name, then it's GPT4-Turbo
         if "preview" in file.name:
-            col_name = f"GPT4-Turbo_{file.name.split('-')[1].capitalize()}"
+            col_name = f"GPT4-Turbo_{annotation}"
         # else it's GPT4
         else:
-            col_name = f"GPT4_{file.name.split('-')[1].capitalize()}"
+            col_name = f"GPT4_{annotation}"
 
         # use col_name to save column that starts with 'question' -> that's the GPT annotation
         full_moral_df[col_name] = df.filter(regex="^question")
 
+    # save the full df
     full_moral_df.to_csv(out_dir / "moral-foundations_reddit_english.csv", index=False)
 
     return None
@@ -130,10 +133,53 @@ def main():
     data_dir = cwd / "Datasets_GPT_Output/"
 
     print("[INFO]: loading, cleaing, and saving discrete emotion annotations")
-    fix_discrete_emotions(data_dir.joinpath("Discrete_Emotions"), out_dir)
+    fix_discrete_emotions(data_dir / "Discrete_Emotions", out_dir)
 
     print("[INFO]: loading, cleaning, and saving moral foundations")
     fix_moral_foundations(data_dir / "Moral Foundations", out_dir)
+
+    print("[INFO]: loading, cleaning, and saving news headlines")
+    news_data_dir = data_dir / "News_headlines"
+
+    gpt3_news = pd.read_csv(news_data_dir / "GPT3.5" / "NewsHeadlinesOutput.csv")
+    gpt4t_news = pd.read_csv(news_data_dir / "GPT4 Turbo" / "dataNHBTurboOutput.csv")
+
+    news_full = gpt3_news.rename(
+        {
+            "headlines.headline": "text",
+            "gptsentiment": "GPT3.5_Sentiment",
+            "gptanger": "GPT3.5_Anger",
+            "gptjoy": "GPT3.5_Joy",
+            "gptsadness": "GPT3.5_Sadness",
+            "gptfear": "GPT3.5_Fear",
+        },
+        axis=1,
+    )
+
+    gpt4t_news = gpt4t_news.rename(
+        {
+            "gptsentimentTurbo": "GPT4-Turbo_Sentiment",
+            "gptangerTurbo": "GPT4-Turbo_Anger",
+            "gptjoyTurbo": "GPT4-Turbo_Joy",
+            "gptsadnessTurbo": "GPT4-Turbo_Sadness",
+            "gptfearTurbo": "GPT4-Turbo_Fear",
+        },
+        axis=1,
+    ).drop(["gptsentiment", "ggptjoyTurbo"], axis=1)
+
+    for file in news_data_dir.glob("GPT4/*.csv"):
+        df = pd.read_csv(file)
+        if "sentiment" in file.name:
+            news_full["GPT4_Sentiment"] = df["sentiment"]
+        else:
+            emotion = file.name.split("-")[3]
+            col_name = f"GPT4_{emotion.capitalize()}"
+            news_full[col_name] = df[emotion]
+
+    news_full = pd.concat(
+        [news_full, gpt4t_news.loc[:, "GPT4-Turbo_Sentiment":]], axis=1
+    )
+    news_full.to_csv(out_dir / "emotion-sentiment_news_english.csv", index=False)
 
 
 if __name__ == "__main__":
