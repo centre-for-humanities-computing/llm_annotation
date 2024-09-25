@@ -1,7 +1,6 @@
 import pandas as pd
 from pathlib import Path
-import glob
-import pathlib
+import re
 
 
 def load_discrete_emotion_dfs(data_dir):
@@ -119,6 +118,35 @@ def fix_moral_foundations(data_dir, out_dir) -> None:
     return None
 
 
+def change_news_colnames(df: pd.DataFrame, model: str):
+    # find column names that contain annotations
+    annotation_columns = [col for col in df.columns if col.startswith("gpt")]
+
+    # create a new column name comprised of the model name and the annotated emotion
+    # (the regex finds the emotion from the old column name and then it is capitalized)
+    new_col_names = [
+        f"{model}_{re.match(pattern='gpt(.*)(Turbo)?', string=col).group(1).capitalize()}"
+        for col in annotation_columns
+    ]
+
+    rename_dict = dict(zip(annotation_columns, new_col_names), axis=1)
+
+    df = df.rename(rename_dict)
+
+    return df
+
+
+def fix_news_headlines(data_dir, out_dir) -> None:
+    # load gpt 3.5 and gpt 4 -> they only have 1 file
+    gpt3_news = pd.read_csv(data_dir / "GPT3.5" / "NewsHeadlinesOutput.csv")
+    gpt4t_news = pd.read_csv(data_dir / "GPT4 Turbo" / "dataNHBTurboOutput.csv")
+
+    gpt3_news = change_news_colnames(gpt3_news, "GPT3.5")
+    gpt4t_news = change_news_colnames(gpt4t_news, "GPT4-Turbo")
+
+    return None
+
+
 def main():
     print("[INFO]: Setting up")
     # get the working directory
@@ -139,33 +167,9 @@ def main():
     fix_moral_foundations(data_dir / "Moral Foundations", out_dir)
 
     print("[INFO]: loading, cleaning, and saving news headlines")
-    news_data_dir = data_dir / "News_headlines"
+    fix_news_headlines(data_dir / "News_headlines")
 
-    gpt3_news = pd.read_csv(news_data_dir / "GPT3.5" / "NewsHeadlinesOutput.csv")
-    gpt4t_news = pd.read_csv(news_data_dir / "GPT4 Turbo" / "dataNHBTurboOutput.csv")
-
-    news_full = gpt3_news.rename(
-        {
-            "headlines.headline": "text",
-            "gptsentiment": "GPT3.5_Sentiment",
-            "gptanger": "GPT3.5_Anger",
-            "gptjoy": "GPT3.5_Joy",
-            "gptsadness": "GPT3.5_Sadness",
-            "gptfear": "GPT3.5_Fear",
-        },
-        axis=1,
-    )
-
-    gpt4t_news = gpt4t_news.rename(
-        {
-            "gptsentimentTurbo": "GPT4-Turbo_Sentiment",
-            "gptangerTurbo": "GPT4-Turbo_Anger",
-            "gptjoyTurbo": "GPT4-Turbo_Joy",
-            "gptsadnessTurbo": "GPT4-Turbo_Sadness",
-            "gptfearTurbo": "GPT4-Turbo_Fear",
-        },
-        axis=1,
-    ).drop(["gptsentiment", "ggptjoyTurbo"], axis=1)
+    gpt4t_news = gpt4t_news.drop(["gptsentiment", "ggptjoyTurbo"], axis=1)
 
     for file in news_data_dir.glob("GPT4/*.csv"):
         df = pd.read_csv(file)
