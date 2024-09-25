@@ -121,17 +121,21 @@ def fix_moral_foundations(data_dir, out_dir) -> None:
 def change_news_colnames(df: pd.DataFrame, model: str):
     # find column names that contain annotations
     annotation_columns = [col for col in df.columns if col.startswith("gpt")]
-
+    print(annotation_columns)
     # create a new column name comprised of the model name and the annotated emotion
     # (the regex finds the emotion from the old column name and then it is capitalized)
     new_col_names = [
-        f"{model}_{re.match(pattern='gpt(.*)(Turbo)?', string=col).group(1).capitalize()}"
+        f"{model}_{re.match(pattern='gpt(.*?)(Turbo)?$', string=col).group(1).capitalize()}"
         for col in annotation_columns
     ]
 
-    rename_dict = dict(zip(annotation_columns, new_col_names), axis=1)
+    rename_dict = dict(zip(annotation_columns, new_col_names))
 
-    df = df.rename(rename_dict)
+    print(rename_dict)
+
+    df = df.rename(rename_dict, axis=1)
+
+    print(df.columns)
 
     return df
 
@@ -141,8 +145,36 @@ def fix_news_headlines(data_dir, out_dir) -> None:
     gpt3_news = pd.read_csv(data_dir / "GPT3.5" / "NewsHeadlinesOutput.csv")
     gpt4t_news = pd.read_csv(data_dir / "GPT4 Turbo" / "dataNHBTurboOutput.csv")
 
-    gpt3_news = change_news_colnames(gpt3_news, "GPT3.5")
+    # drop redundant columns in gpt4-turbo data
+    gpt4t_news = gpt4t_news.drop(["gptsentiment", "ggptjoyTurbo"], axis=1)
+
+    # change the column names, also gpt3.5 data is blueprint for full df
+    news_full = change_news_colnames(gpt3_news, "GPT3.5")
     gpt4t_news = change_news_colnames(gpt4t_news, "GPT4-Turbo")
+
+    print(news_full.columns)
+    print(gpt4t_news.columns)
+
+    # fix gpt 4 files - read each file in GPT 4 folder, get the annotation column, add to full df
+    for file in data_dir.glob("GPT4/*.csv"):
+        df = pd.read_csv(file)
+        if "sentiment" in file.name:
+            news_full["GPT4_Sentiment"] = df["sentiment"]
+        else:
+            # use file name to figure out which emotion is annotated
+            emotion = file.name.split("-")[3]
+            # use that as part of the column name
+            col_name = f"GPT4_{emotion.capitalize()}"
+            # save the annotation column in full df
+            news_full[col_name] = df[emotion]
+
+    # add gpt4-turbo annotations to full data
+    # news_full = pd.concat(
+    #     [news_full, gpt4t_news.loc[:, "GPT4-Turbo_Sentiment":]], axis=1
+    # )
+
+    # # save the data
+    # news_full.to_csv(out_dir / "emotion-sentiment_news_english.csv", index=False)
 
     return None
 
@@ -167,23 +199,7 @@ def main():
     fix_moral_foundations(data_dir / "Moral Foundations", out_dir)
 
     print("[INFO]: loading, cleaning, and saving news headlines")
-    fix_news_headlines(data_dir / "News_headlines")
-
-    gpt4t_news = gpt4t_news.drop(["gptsentiment", "ggptjoyTurbo"], axis=1)
-
-    for file in news_data_dir.glob("GPT4/*.csv"):
-        df = pd.read_csv(file)
-        if "sentiment" in file.name:
-            news_full["GPT4_Sentiment"] = df["sentiment"]
-        else:
-            emotion = file.name.split("-")[3]
-            col_name = f"GPT4_{emotion.capitalize()}"
-            news_full[col_name] = df[emotion]
-
-    news_full = pd.concat(
-        [news_full, gpt4t_news.loc[:, "GPT4-Turbo_Sentiment":]], axis=1
-    )
-    news_full.to_csv(out_dir / "emotion-sentiment_news_english.csv", index=False)
+    fix_news_headlines(data_dir / "News_headlines", out_dir)
 
 
 if __name__ == "__main__":
