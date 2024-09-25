@@ -31,7 +31,7 @@ def fix_dummy_columns(df: pd.DataFrame, dummy_cols: list):
     """
     adds a column to the given dataframe which are the annotations based on the
     one-hot columns specified.
-    the function assumes that the list is ordered so the labels indexes
+    the function assumes that the list is ordered so the labels' indexes
     match the numerical labels (i.e., anger is first bc it is labelled using 1)
     """
     df["annotations"] = pd.from_dummies(df[dummy_cols])
@@ -62,23 +62,9 @@ def create_full_discrete_emo_df(df1, df2, df3=None):
     return full_df
 
 
-def main():
-    print("[INFO]: Setting up")
-    # get the working directory
-    cwd = Path.cwd()
-
-    # create out folder
-    out_folder = "clean_data/"
-    out_dir = cwd / out_folder
-    Path(out_dir).mkdir(exist_ok=True)
-
-    # path to OSF data from Rathje et al
-    data_dir = cwd / "Datasets_GPT_Output/"
-
-    print("[INFO]: loading and cleaing discrete emotion annotations")
-
+def fix_discrete_emotion_annotations(data_dir, out_dir) -> None:
     emo_eng_3, emo_eng_4, emo_eng_4t, emo_ind_3, emo_ind_4 = load_discrete_emotion_dfs(
-        data_dir.joinpath("Discrete_Emotions")
+        data_dir
     )
 
     # clean datasets with dummy columns
@@ -93,6 +79,25 @@ def main():
 
     full_emo_eng.to_csv(out_dir / "emotion_twitter_english.csv", index=False)
     full_emo_ind.to_csv(out_dir / "emotion_twitter_indonesian.csv", index=False)
+
+    return None
+
+
+def main():
+    print("[INFO]: Setting up")
+    # get the working directory
+    cwd = Path.cwd()
+
+    # create out folder
+    out_folder = "clean_data/"
+    out_dir = cwd / out_folder
+    Path(out_dir).mkdir(exist_ok=True)
+
+    # path to OSF data from Rathje et al
+    data_dir = cwd / "Datasets_GPT_Output/"
+
+    print("[INFO]: loading, cleaing, and saving discrete emotion annotations")
+    fix_discrete_emotion_annotations(data_dir.joinpath("Discrete_Emotions"), out_dir)
 
 
 if __name__ == "__main__":
