@@ -73,7 +73,7 @@ def fix_news_headlines(data_dir, out_dir) -> None:
     gpt3_news = change_news_colnames(gpt3_news, "GPT3.5")
     gpt4t_news = change_news_colnames(gpt4t_news, "GPT4-Turbo")
 
-    # make the text column name makes sense and create full df
+    # make the text column name make sense and create full df
     news_full = gpt3_news.rename({"headlines.headline": "text"}, axis=1)
 
     # fix gpt 4 files - read each file in GPT 4 folder, find the annotation column, add it to full df with proper name
@@ -84,7 +84,6 @@ def fix_news_headlines(data_dir, out_dir) -> None:
         else:
             # use file name to figure out which emotion is annotated
             emotion = file.name.split("-")[3]
-            # use that as part of the column name
             col_name = f"GPT4_{emotion.capitalize()}"
             # save the annotation column in full df
             news_full[col_name] = df[emotion]
@@ -96,6 +95,33 @@ def fix_news_headlines(data_dir, out_dir) -> None:
 
     # save the data
     news_full.to_csv(out_dir / "emotion-sentiment_news_english.csv", index=False)
+
+    return None
+
+
+def fix_offensiveness(data_dir, out_dir) -> None:
+    # read_files
+    off_3_eng = pd.read_csv(data_dir / "GPT3.5" / "EnglishOffensiveOutput.csv")
+    off_4_eng = pd.read_csv(data_dir / "GPT4" / "offensive-english-0-gpt-4-0-1.csv")
+    off_4t_eng = pd.read_csv(
+        data_dir / "GPT4 Turbo" / "offensive-english-0-gpt-4-0125-preview-0-1.csv"
+    )
+    off_3_tur = pd.read_csv(data_dir / "GPT3.5" / "offenseval-Turkish-GPT.csv")
+    off_4_tur = pd.read_csv(data_dir / "GPT4" / "offensive-turkish-0-gpt-4-0-1.csv")
+    off_4t_tur = pd.read_csv(
+        data_dir / "GPT4 Turbo" / "offensive-turkish-0-gpt-4-0125-preview-0-1.csv",
+        sep=";",
+    )
+
+    off_3_eng = off_3_eng.rename({"text": "tweet"}, axis=1)
+
+    # concat the df's and fix column names
+    full_off_eng = create_off_df(off_3_eng, off_4_eng, off_4t_eng)
+    full_off_tur = create_off_df(off_3_tur, off_4_tur, off_4t_tur)
+
+    # save the data
+    full_off_eng.to_csv(out_dir / "offensive_twitter_english.csv", index=False)
+    full_off_tur.to_csv(out_dir / "offensive_twitter_turkish.csv", index=False)
 
     return None
 
@@ -121,6 +147,9 @@ def main():
 
     print("[INFO]: loading, cleaning, and saving news headlines")
     fix_news_headlines(data_dir / "News_headlines", out_dir)
+
+    print("[INFO]: loading, cleaning, and saving offensiveness data")
+    fix_offensiveness(data_dir / "Offensiveness", out_dir)
 
 
 if __name__ == "__main__":
