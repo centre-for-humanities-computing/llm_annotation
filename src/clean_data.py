@@ -1,5 +1,6 @@
 import pandas as pd
 from pathlib import Path
+import glob
 import pathlib
 
 
@@ -62,7 +63,11 @@ def create_full_discrete_emo_df(df1, df2, df3=None):
     return full_df
 
 
-def fix_discrete_emotion_annotations(data_dir, out_dir) -> None:
+def fix_discrete_emotions(data_dir, out_dir) -> None:
+    """
+    load, clean, and save the files for discrete emotions
+
+    """
     emo_eng_3, emo_eng_4, emo_eng_4t, emo_ind_3, emo_ind_4 = load_discrete_emotion_dfs(
         data_dir
     )
@@ -83,6 +88,34 @@ def fix_discrete_emotion_annotations(data_dir, out_dir) -> None:
     return None
 
 
+def fix_moral_foundations(data_dir, out_dir) -> None:
+    # setting path and getting filename
+    moral_p = Path(data_dir)
+    files = moral_p.glob("**/MFRC*")
+
+    for i, file in enumerate(files):
+        # read file
+        df = pd.read_csv(file)
+
+        # from the first file we get the text and the human annotations
+        if i == 0:
+            full_moral_df = df.loc[:, "text":"is_moral"]
+
+        # if preview is in the file name, then it's GPT4-Turbo
+        if "preview" in file.name:
+            col_name = f"GPT4-Turbo_{file.name.split('-')[1].capitalize()}"
+        # else it's GPT4
+        else:
+            col_name = f"GPT4_{file.name.split('-')[1].capitalize()}"
+
+        # use col_name to save column that starts with 'question' -> that's the GPT annotation
+        full_moral_df[col_name] = df.filter(regex="^question")
+
+    full_moral_df.to_csv(out_dir / "moral-foundations_reddit_english.csv", index=False)
+
+    return None
+
+
 def main():
     print("[INFO]: Setting up")
     # get the working directory
@@ -97,7 +130,10 @@ def main():
     data_dir = cwd / "Datasets_GPT_Output/"
 
     print("[INFO]: loading, cleaing, and saving discrete emotion annotations")
-    fix_discrete_emotion_annotations(data_dir.joinpath("Discrete_Emotions"), out_dir)
+    fix_discrete_emotions(data_dir.joinpath("Discrete_Emotions"), out_dir)
+
+    print("[INFO]: loading, cleaning, and saving moral foundations")
+    fix_moral_foundations(data_dir / "Moral Foundations", out_dir)
 
 
 if __name__ == "__main__":
