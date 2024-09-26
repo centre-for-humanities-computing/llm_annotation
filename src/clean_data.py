@@ -141,7 +141,7 @@ def main():
     data_dir = cwd / "Datasets_GPT_Output/"
 
     # print("[INFO]: loading, cleaing, and saving discrete emotion annotations")
-    fix_discrete_emotions(data_dir / "Discrete_Emotions", out_dir)
+    # fix_discrete_emotions(data_dir / "Discrete_Emotions", out_dir)
 
     # print("[INFO]: loading, cleaning, and saving moral foundations")
     # fix_moral_foundations(data_dir / "Moral Foundations", out_dir)
@@ -185,7 +185,9 @@ def main():
         gpt4_df = load_lang_csv_from_list(lang, gpt4_sentfiles)
         gpt4t_df = load_lang_csv_from_list(lang, gpt4t_sentfiles)
 
-        full_df = gpt3_df.rename({"gpt": "GPT3.5"}, axis=1)
+        full_df = gpt3_df.rename({"gpt": "GPT3.5", "text": "tweet"}, axis=1).loc[
+            :, "tweet":
+        ]
 
         if "gpt4" not in gpt4_df.columns:
             gpt4_df = fix_dummy_columns(
