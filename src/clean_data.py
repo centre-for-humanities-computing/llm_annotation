@@ -203,6 +203,8 @@ def main():
     print("[INFO]: loading, cleaning, and saving multilingual sentiment annotations")
     fix_sentiment_multiling(data_dir / "Sentiment", out_dir)
 
+    print("[INFO]: Done :)")
+
 
 if __name__ == "__main__":
     main()
