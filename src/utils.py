@@ -91,3 +91,15 @@ def create_off_df(df1, df2, df3):
     ful_df["GPT4-Turbo"] = df3["gpt4"].astype(int)
 
     return ful_df
+
+
+def find_lang_file(lang, filelist):
+    # for each file in the list, make the file name lowercase and look for the language
+    file_match = []
+
+    for file in filelist:
+        if lang in file.name.lower():
+            file_match.append(file)
+
+    # return the file path for the matched file
+    return file_match[0]

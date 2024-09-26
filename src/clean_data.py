@@ -139,17 +139,49 @@ def main():
     # path to OSF data from Rathje et al
     data_dir = cwd / "Datasets_GPT_Output/"
 
-    print("[INFO]: loading, cleaing, and saving discrete emotion annotations")
-    fix_discrete_emotions(data_dir / "Discrete_Emotions", out_dir)
+    # print("[INFO]: loading, cleaing, and saving discrete emotion annotations")
+    # fix_discrete_emotions(data_dir / "Discrete_Emotions", out_dir)
 
-    print("[INFO]: loading, cleaning, and saving moral foundations")
-    fix_moral_foundations(data_dir / "Moral Foundations", out_dir)
+    # print("[INFO]: loading, cleaning, and saving moral foundations")
+    # fix_moral_foundations(data_dir / "Moral Foundations", out_dir)
 
-    print("[INFO]: loading, cleaning, and saving news headlines")
-    fix_news_headlines(data_dir / "News_headlines", out_dir)
+    # print("[INFO]: loading, cleaning, and saving news headlines")
+    # fix_news_headlines(data_dir / "News_headlines", out_dir)
 
-    print("[INFO]: loading, cleaning, and saving offensiveness data")
-    fix_offensiveness(data_dir / "Offensiveness", out_dir)
+    # print("[INFO]: loading, cleaning, and saving offensiveness data")
+    # fix_offensiveness(data_dir / "Offensiveness", out_dir)
+
+    print("[INFO]: loading, cleaning, and saving multilingual sentiment annotations")
+    sent_dir = data_dir / "Sentiment"
+
+    # typo_file = sent_dir / "GPT 4 Turbo" / "sentiment-igbo-0-gpt-4-0125-preview-0-2.csv"
+    # typo_file.rename(
+    #     sent_dir / "GPT 4 Turbo" / "sentiment-ibo-0-gpt-4-0125-preview-0-2.csv"
+    # )
+
+    gpt3_sentfiles = list(sent_dir.joinpath("GPT3.5/").iterdir())
+    gpt4_sentfiles = list(sent_dir.joinpath("GPT4/").iterdir())
+    gpt4t_sentfiles = list(sent_dir.joinpath("GPT 4 Turbo/").iterdir())
+
+    languages = {
+        "amharic",
+        "arabic",
+        "english",
+        "hau",
+        "ibo",
+        "kinyarwanda",
+        "swahili",
+        "tsonga",
+        "twi",
+        "yoruba",
+    }
+
+    for lang in languages:
+        gpt3_file = find_lang_file(lang, gpt3_sentfiles)
+        gpt4_file = find_lang_file(lang, gpt4_sentfiles)
+        gpt4t_file = find_lang_file(lang, gpt4t_sentfiles)
+
+        full_df = gpt3_file.rename({"gpt": "GPT3.5"}, axis=1)
 
 
 if __name__ == "__main__":
