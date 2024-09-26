@@ -188,17 +188,17 @@ def main():
     # path to OSF data from Rathje et al
     data_dir = cwd / "Datasets_GPT_Output/"
 
-    # print("[INFO]: loading, cleaing, and saving discrete emotion annotations")
-    # fix_discrete_emotions(data_dir / "Discrete_Emotions", out_dir)
+    print("[INFO]: loading, cleaing, and saving discrete emotion annotations")
+    fix_discrete_emotions(data_dir / "Discrete_Emotions", out_dir)
 
-    # print("[INFO]: loading, cleaning, and saving moral foundations")
-    # fix_moral_foundations(data_dir / "Moral Foundations", out_dir)
+    print("[INFO]: loading, cleaning, and saving moral foundations")
+    fix_moral_foundations(data_dir / "Moral Foundations", out_dir)
 
-    # print("[INFO]: loading, cleaning, and saving news headlines")
-    # fix_news_headlines(data_dir / "News_headlines", out_dir)
+    print("[INFO]: loading, cleaning, and saving news headlines")
+    fix_news_headlines(data_dir / "News_headlines", out_dir)
 
-    # print("[INFO]: loading, cleaning, and saving offensiveness data")
-    # fix_offensiveness(data_dir / "Offensiveness", out_dir)
+    print("[INFO]: loading, cleaning, and saving offensiveness data")
+    fix_offensiveness(data_dir / "Offensiveness", out_dir)
 
     print("[INFO]: loading, cleaning, and saving multilingual sentiment annotations")
     fix_sentiment_multiling(data_dir / "Sentiment", out_dir)
