@@ -159,6 +159,9 @@ def main():
     #     sent_dir / "GPT 4 Turbo" / "sentiment-ibo-0-gpt-4-0125-preview-0-2.csv"
     # )
 
+    typo_file = sent_dir / "GPT4" / "sentiment-hau-0-gpt-4-0-1.csv"
+    typo_file.rename(sent_dir / "GPT4" / "sentiment-hausa-0-gpt-4-0-1.csv")
+
     gpt3_sentfiles = list(sent_dir.joinpath("GPT3.5/").iterdir())
     gpt4_sentfiles = list(sent_dir.joinpath("GPT4/").iterdir())
     gpt4t_sentfiles = list(sent_dir.joinpath("GPT 4 Turbo/").iterdir())
@@ -167,7 +170,7 @@ def main():
         "amharic",
         "arabic",
         "english",
-        "hau",
+        "hausa",
         "ibo",
         "kinyarwanda",
         "swahili",
@@ -177,11 +180,15 @@ def main():
     }
 
     for lang in languages:
-        gpt3_file = find_lang_file(lang, gpt3_sentfiles)
-        gpt4_file = find_lang_file(lang, gpt4_sentfiles)
-        gpt4t_file = find_lang_file(lang, gpt4t_sentfiles)
+        gpt3_df = load_lang_csv_from_list(lang, gpt3_sentfiles)
+        gpt4_df = load_lang_csv_from_list(lang, gpt4_sentfiles)
+        gpt4t_df = load_lang_csv_from_list(lang, gpt4t_sentfiles)
 
-        full_df = gpt3_file.rename({"gpt": "GPT3.5"}, axis=1)
+        full_df = gpt3_df.rename({"gpt": "GPT3.5"}, axis=1)
+        full_df["GPT4"] = gpt4_df["gpt4"]
+        full_df["GPT4-Turbo"] = gpt4t_df["gpt4"]
+
+        full_df.to_csv(out_dir / f"sentiment_twitter_{lang}.csv")
 
 
 if __name__ == "__main__":
