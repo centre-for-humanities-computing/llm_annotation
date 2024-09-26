@@ -127,6 +127,54 @@ def fix_offensiveness(data_dir, out_dir) -> None:
     return None
 
 
+def fix_sentiment_multiling(data_dir, out_dir) -> None:
+    change_typo_filenames(data_dir)
+
+    gpt3_sentfiles = list(data_dir.joinpath("GPT3.5/").iterdir())
+    gpt4_sentfiles = list(data_dir.joinpath("GPT4/").iterdir())
+    gpt4t_sentfiles = list(data_dir.joinpath("GPT 4 Turbo/").iterdir())
+
+    languages = {
+        "amharic",
+        "arabic",
+        "english",
+        "hausa",
+        "ibo",
+        "kinyarwanda",
+        "swahili",
+        "tsonga",
+        "twi",
+        "yoruba",
+    }
+
+    for lang in languages:
+        # find the three files for each language
+        gpt3_df = load_lang_csv_from_list(lang, gpt3_sentfiles)
+        gpt4_df = load_lang_csv_from_list(lang, gpt4_sentfiles)
+        gpt4t_df = load_lang_csv_from_list(lang, gpt4t_sentfiles)
+
+        # rename the gpt3 column, and select only relevant columns
+        full_df = gpt3_df.rename({"gpt": "GPT3.5", "text": "tweet"}, axis=1).loc[
+            :, "tweet":
+        ]
+
+        # some gpt4 files have dummy columns instead of a gpt4 one, fix that
+        if "gpt4" not in gpt4_df.columns:
+            gpt4_df = fix_dummy_columns(
+                gpt4_df, ["positive", "neutral", "negative"], "gpt4"
+            )
+
+        # save gpt4 annotations
+        full_df["GPT4"] = gpt4_df["gpt4"]
+        # and gpt4-turbo
+        full_df["GPT4-Turbo"] = gpt4t_df["gpt4"]
+
+        # save the file
+        full_df.to_csv(out_dir / f"sentiment_twitter_{lang}.csv", index=False)
+
+        return None
+
+
 def main():
     print("[INFO]: Setting up")
     # get the working directory
@@ -153,52 +201,7 @@ def main():
     # fix_offensiveness(data_dir / "Offensiveness", out_dir)
 
     print("[INFO]: loading, cleaning, and saving multilingual sentiment annotations")
-    sent_dir = data_dir / "Sentiment"
-
-    # ibo_typo_file = sent_dir / "GPT 4 Turbo" / "sentiment-igbo-0-gpt-4-0125-preview-0-2.csv"
-    # ibo_typo_file.rename(
-    #     sent_dir / "GPT 4 Turbo" / "sentiment-ibo-0-gpt-4-0125-preview-0-2.csv"
-    # )
-
-    # hau_typo_file = sent_dir / "GPT4" / "sentiment-hau-0-gpt-4-0-1.csv"
-    # hau_typo_file.rename(sent_dir / "GPT4" / "sentiment-hausa-0-gpt-4-0-1.csv")
-
-    gpt3_sentfiles = list(sent_dir.joinpath("GPT3.5/").iterdir())
-    gpt4_sentfiles = list(sent_dir.joinpath("GPT4/").iterdir())
-    gpt4t_sentfiles = list(sent_dir.joinpath("GPT 4 Turbo/").iterdir())
-
-    languages = {
-        "amharic",
-        "arabic",
-        "english",
-        "hausa",
-        "ibo",
-        "kinyarwanda",
-        "swahili",
-        "tsonga",
-        "twi",
-        "yoruba",
-    }
-
-    for lang in languages:
-        gpt3_df = load_lang_csv_from_list(lang, gpt3_sentfiles)
-        gpt4_df = load_lang_csv_from_list(lang, gpt4_sentfiles)
-        gpt4t_df = load_lang_csv_from_list(lang, gpt4t_sentfiles)
-
-        full_df = gpt3_df.rename({"gpt": "GPT3.5", "text": "tweet"}, axis=1).loc[
-            :, "tweet":
-        ]
-
-        if "gpt4" not in gpt4_df.columns:
-            gpt4_df = fix_dummy_columns(
-                gpt4_df, ["positive", "neutral", "negative"], "gpt4"
-            )
-
-        full_df["GPT4"] = gpt4_df["gpt4"]
-
-        full_df["GPT4-Turbo"] = gpt4t_df["gpt4"]
-
-        full_df.to_csv(out_dir / f"sentiment_twitter_{lang}.csv")
+    fix_sentiment_multiling(data_dir / "Sentiment", out_dir)
 
 
 if __name__ == "__main__":

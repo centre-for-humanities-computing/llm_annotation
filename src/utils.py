@@ -110,3 +110,26 @@ def load_lang_csv_from_list(lang, filelist):
     df = pd.read_csv(file_match[0])
 
     return df
+
+
+def change_typo_filenames(data_dir):
+    # specify file name with the typo
+    ibo_typo_file = (
+        data_dir / "GPT 4 Turbo" / "sentiment-igbo-0-gpt-4-0125-preview-0-2.csv"
+    )
+    # specify the new file name
+    try:
+        ibo_typo_file.rename(
+            data_dir / "GPT 4 Turbo" / "sentiment-ibo-0-gpt-4-0125-preview-0-2.csv"
+        )
+    except FileNotFoundError:
+        pass
+
+    # same here
+    hau_typo_file = data_dir / "GPT4" / "sentiment-hau-0-gpt-4-0-1.csv"
+    try:
+        hau_typo_file.rename(data_dir / "GPT4" / "sentiment-hausa-0-gpt-4-0-1.csv")
+    except FileNotFoundError:
+        pass
+
+    return None
