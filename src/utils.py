@@ -28,19 +28,19 @@ def load_discrete_emotion_dfs(data_dir):
     return emo_eng_3, emo_eng_4, emo_eng_4t, emo_ind_3, emo_ind_4
 
 
-def fix_dummy_columns(df: pd.DataFrame, dummy_cols: list):
+def fix_dummy_columns(df: pd.DataFrame, dummy_cols: list, new_col_name: str):
     """
     adds a column to the given dataframe which are the annotations based on the
     one-hot columns specified.
     the function assumes that the list is ordered so the labels' indexes
     match the numerical labels (i.e., anger is first bc it is labelled using 1)
     """
-    df["annotations"] = pd.from_dummies(df[dummy_cols])
+    df[new_col_name] = pd.from_dummies(df[dummy_cols])
 
     # make dict used to make the annotations numerical
     label_dict = dict(zip(dummy_cols, range(1, len(dummy_cols) + 1)))
 
-    df = df.replace({"annotations": label_dict})
+    df = df.replace({new_col_name: label_dict})
 
     return df
 
@@ -49,12 +49,13 @@ def create_full_discrete_emo_df(df1, df2, df3=None):
     """
     takes the discrete emotion dataframes and gives them consistent columns names and formatting
     """
+
     # rename columns and select only the relevant ones
     full_df = df1.rename({"gpt": "GPT3.5", "Tweet": "tweet"}, axis=1).loc[
         :, ["tweet", "human", "GPT3.5"]
     ]
 
-    full_df["GPT4"] = df2["annotations"]
+    full_df["GPT4"] = df2["gpt4"]
 
     # because indonesian only has two dataframes
     if df3 is not None:
@@ -93,7 +94,11 @@ def create_off_df(df1, df2, df3):
     return ful_df
 
 
-def find_lang_file(lang, filelist):
+def load_lang_csv_from_list(lang, filelist):
+    """
+    find the csv file that matches the specified language from the filelist
+    and return it as a pandas dataframe
+    """
     # for each file in the list, make the file name lowercase and look for the language
     file_match = []
 
@@ -101,5 +106,7 @@ def find_lang_file(lang, filelist):
         if lang in file.name.lower():
             file_match.append(file)
 
-    # return the file path for the matched file
-    return file_match[0]
+    # read the file path for the matched file
+    df = pd.read_csv(file_match[0])
+
+    return df

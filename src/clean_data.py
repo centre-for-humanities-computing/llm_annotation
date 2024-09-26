@@ -13,11 +13,12 @@ def fix_discrete_emotions(data_dir, out_dir) -> None:
     emo_eng_3, emo_eng_4, emo_eng_4t, emo_ind_3, emo_ind_4 = load_discrete_emotion_dfs(
         data_dir
     )
-
     # clean datasets with dummy columns
-    emo_eng_4 = fix_dummy_columns(emo_eng_4, ["anger", "joy", "sadness", "optimism"])
+    emo_eng_4 = fix_dummy_columns(
+        emo_eng_4, ["anger", "joy", "sadness", "optimism"], "gpt4"
+    )
     emo_ind_4 = fix_dummy_columns(
-        emo_ind_4, ["anger", "fear", "sadness", "love", "joy"]
+        emo_ind_4, ["anger", "fear", "sadness", "love", "joy"], "gpt4"
     )
 
     # getting the full dfs and saving them
@@ -140,7 +141,7 @@ def main():
     data_dir = cwd / "Datasets_GPT_Output/"
 
     # print("[INFO]: loading, cleaing, and saving discrete emotion annotations")
-    # fix_discrete_emotions(data_dir / "Discrete_Emotions", out_dir)
+    fix_discrete_emotions(data_dir / "Discrete_Emotions", out_dir)
 
     # print("[INFO]: loading, cleaning, and saving moral foundations")
     # fix_moral_foundations(data_dir / "Moral Foundations", out_dir)
@@ -154,13 +155,13 @@ def main():
     print("[INFO]: loading, cleaning, and saving multilingual sentiment annotations")
     sent_dir = data_dir / "Sentiment"
 
-    # typo_file = sent_dir / "GPT 4 Turbo" / "sentiment-igbo-0-gpt-4-0125-preview-0-2.csv"
-    # typo_file.rename(
+    # ibo_typo_file = sent_dir / "GPT 4 Turbo" / "sentiment-igbo-0-gpt-4-0125-preview-0-2.csv"
+    # ibo_typo_file.rename(
     #     sent_dir / "GPT 4 Turbo" / "sentiment-ibo-0-gpt-4-0125-preview-0-2.csv"
     # )
 
-    typo_file = sent_dir / "GPT4" / "sentiment-hau-0-gpt-4-0-1.csv"
-    typo_file.rename(sent_dir / "GPT4" / "sentiment-hausa-0-gpt-4-0-1.csv")
+    # hau_typo_file = sent_dir / "GPT4" / "sentiment-hau-0-gpt-4-0-1.csv"
+    # hau_typo_file.rename(sent_dir / "GPT4" / "sentiment-hausa-0-gpt-4-0-1.csv")
 
     gpt3_sentfiles = list(sent_dir.joinpath("GPT3.5/").iterdir())
     gpt4_sentfiles = list(sent_dir.joinpath("GPT4/").iterdir())
@@ -185,7 +186,14 @@ def main():
         gpt4t_df = load_lang_csv_from_list(lang, gpt4t_sentfiles)
 
         full_df = gpt3_df.rename({"gpt": "GPT3.5"}, axis=1)
+
+        if "gpt4" not in gpt4_df.columns:
+            gpt4_df = fix_dummy_columns(
+                gpt4_df, ["positive", "neutral", "negative"], "gpt4"
+            )
+
         full_df["GPT4"] = gpt4_df["gpt4"]
+
         full_df["GPT4-Turbo"] = gpt4t_df["gpt4"]
 
         full_df.to_csv(out_dir / f"sentiment_twitter_{lang}.csv")
