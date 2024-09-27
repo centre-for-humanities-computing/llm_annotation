@@ -101,11 +101,17 @@ def load_lang_csv_from_list(lang, filelist):
     file_match = []
 
     for file in filelist:
+        print(file.name.lower())
         if lang in file.name.lower():
             file_match.append(file)
 
     # read the file path for the matched file
-    df = pd.read_csv(file_match[0])
+    try:
+        df = pd.read_csv(file_match[0])
+
+    # if there's no files in the list for that language, make df None
+    except IndexError:
+        df = None
 
     return df
 
@@ -113,20 +119,40 @@ def load_lang_csv_from_list(lang, filelist):
 def change_typo_filenames(data_dir):
     # specify file name with the typo
     ibo_typo_file = (
-        data_dir / "GPT 4 Turbo" / "sentiment-igbo-0-gpt-4-0125-preview-0-2.csv"
+        data_dir
+        / "Sentiment"
+        / "GPT 4 Turbo"
+        / "sentiment-igbo-0-gpt-4-0125-preview-0-2.csv"
     )
     # specify the new file name
     try:
         ibo_typo_file.rename(
-            data_dir / "GPT 4 Turbo" / "sentiment-ibo-0-gpt-4-0125-preview-0-2.csv"
+            data_dir
+            / "Sentiment"
+            / "GPT 4 Turbo"
+            / "sentiment-ibo-0-gpt-4-0125-preview-0-2.csv"
         )
     except FileNotFoundError:
         pass
 
     # same here
-    hau_typo_file = data_dir / "GPT4" / "sentiment-hau-0-gpt-4-0-1.csv"
+    hau_typo_file = data_dir / "Sentiment" / "GPT4" / "sentiment-hau-0-gpt-4-0-1.csv"
     try:
-        hau_typo_file.rename(data_dir / "GPT4" / "sentiment-hausa-0-gpt-4-0-1.csv")
+        hau_typo_file.rename(
+            data_dir / "Sentiment" / "GPT4" / "sentiment-hausa-0-gpt-4-0-1.csv"
+        )
+    except FileNotFoundError:
+        pass
+
+    # and for this one
+    eng_typo_files = (
+        data_dir / "Discrete_Emotions" / "GPT4" / "emotion-tweets-3-gpt-4-0-1.csv"
+    )
+
+    try:
+        eng_typo_files.rename(
+            data_dir / "Discrete_Emotions" / "GPT4" / "emotion-english-tweets.csv"
+        )
     except FileNotFoundError:
         pass
 

@@ -10,23 +10,48 @@ def fix_discrete_emotions(data_dir, out_dir) -> None:
     load, clean, and save the files for discrete emotions
 
     """
-    emo_eng_3, emo_eng_4, emo_eng_4t, emo_ind_3, emo_ind_4 = load_discrete_emotion_dfs(
-        data_dir
-    )
-    # clean datasets with dummy columns
-    emo_eng_4 = fix_dummy_columns(
-        emo_eng_4, ["anger", "joy", "sadness", "optimism"], "gpt4"
-    )
-    emo_ind_4 = fix_dummy_columns(
-        emo_ind_4, ["anger", "fear", "sadness", "love", "joy"], "gpt4"
-    )
+    gpt3_files = list(data_dir.joinpath("GPT3.5/").iterdir())
+    gpt4_files = list(data_dir.joinpath("GPT4/").iterdir())
+    # print(gpt4_files)
+    gpt4t_files = list(data_dir.joinpath("GPT4 Turbo/").iterdir())
 
-    # getting the full dfs and saving them
-    full_emo_eng = make_clean_df(emo_eng_3, emo_eng_4, emo_eng_4t)
-    full_emo_ind = make_clean_df(emo_ind_3, emo_ind_4)
+    for lang in ["english", "indonesian"]:
+        # find the three files for each language
+        gpt3_df = load_lang_csv_from_list(lang, gpt3_files)
+        gpt4_df = load_lang_csv_from_list(lang, gpt4_files)
+        gpt4t_df = load_lang_csv_from_list(lang, gpt4t_files)
 
-    full_emo_eng.to_csv(out_dir / "emotion_twitter_english.csv", index=False)
-    full_emo_ind.to_csv(out_dir / "emotion_twitter_indonesian.csv", index=False)
+        # some gpt4 files have dummy columns instead of a gpt4 one, fix that
+        if lang == "indonesian":
+            gpt4_df = fix_dummy_columns(
+                gpt4_df, ["anger", "fear", "sadness", "love", "joy"], "gpt4"
+            )
+        if lang == "english":
+            gpt4_df = fix_dummy_columns(
+                gpt4_df, ["anger", "joy", "sadness", "optimism"], "gpt4"
+            )
+        full_df = make_clean_df(gpt3_df, gpt4_df, gpt4t_df)
+
+        # save the file
+        full_df.to_csv(out_dir / f"emotion_twitter_{lang}.csv", index=False)
+
+    # emo_eng_3, emo_eng_4, emo_eng_4t, emo_ind_3, emo_ind_4 = load_discrete_emotion_dfs(
+    #     data_dir
+    # )
+    # # clean datasets with dummy columns
+    # emo_eng_4 = fix_dummy_columns(
+    #     emo_eng_4, ["anger", "joy", "sadness", "optimism"], "gpt4"
+    # )
+    # emo_ind_4 = fix_dummy_columns(
+    #     emo_ind_4, ["anger", "fear", "sadness", "love", "joy"], "gpt4"
+    # )
+
+    # # getting the full dfs and saving them
+    # full_emo_eng = make_clean_df(emo_eng_3, emo_eng_4, emo_eng_4t)
+    # full_emo_ind = make_clean_df(emo_ind_3, emo_ind_4)
+
+    # full_emo_eng.to_csv(out_dir / "emotion_twitter_english.csv", index=False)
+    # full_emo_ind.to_csv(out_dir / "emotion_twitter_indonesian.csv", index=False)
 
     return None
 
@@ -126,8 +151,6 @@ def fix_offensiveness(data_dir, out_dir) -> None:
 
 
 def fix_sentiment_multiling(data_dir, out_dir) -> None:
-    change_typo_filenames(data_dir)
-
     gpt3_sentfiles = list(data_dir.joinpath("GPT3.5/").iterdir())
     gpt4_sentfiles = list(data_dir.joinpath("GPT4/").iterdir())
     gpt4t_sentfiles = list(data_dir.joinpath("GPT 4 Turbo/").iterdir())
@@ -171,27 +194,30 @@ def main():
     cwd = Path.cwd()
 
     # create out folder
-    out_folder = "clean_data/"
+    out_folder = "test_clean_data/"
     out_dir = cwd / out_folder
     Path(out_dir).mkdir(exist_ok=True)
 
     # path to OSF data from Rathje et al
     data_dir = cwd / "Datasets_GPT_Output/"
 
+    # fixing some file names
+    change_typo_filenames(data_dir)
+
     print("[INFO]: loading, cleaing, and saving discrete emotion annotations")
     fix_discrete_emotions(data_dir / "Discrete_Emotions", out_dir)
 
-    print("[INFO]: loading, cleaning, and saving moral foundations")
-    fix_moral_foundations(data_dir / "Moral Foundations", out_dir)
+    # print("[INFO]: loading, cleaning, and saving moral foundations")
+    # fix_moral_foundations(data_dir / "Moral Foundations", out_dir)
 
-    print("[INFO]: loading, cleaning, and saving news headlines")
-    fix_news_headlines(data_dir / "News_headlines", out_dir)
+    # print("[INFO]: loading, cleaning, and saving news headlines")
+    # fix_news_headlines(data_dir / "News_headlines", out_dir)
 
-    print("[INFO]: loading, cleaning, and saving offensiveness data")
-    fix_offensiveness(data_dir / "Offensiveness", out_dir)
+    # print("[INFO]: loading, cleaning, and saving offensiveness data")
+    # fix_offensiveness(data_dir / "Offensiveness", out_dir)
 
-    print("[INFO]: loading, cleaning, and saving multilingual sentiment annotations")
-    fix_sentiment_multiling(data_dir / "Sentiment", out_dir)
+    # print("[INFO]: loading, cleaning, and saving multilingual sentiment annotations")
+    # fix_sentiment_multiling(data_dir / "Sentiment", out_dir)
 
     print("[INFO]: Done :)")
 
