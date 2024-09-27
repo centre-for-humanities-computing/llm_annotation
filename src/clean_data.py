@@ -107,26 +107,24 @@ def fix_news_headlines(data_dir, out_dir) -> None:
 
 
 def fix_offensiveness(data_dir, out_dir) -> None:
-    # read_files
-    off_3_eng = pd.read_csv(data_dir / "GPT3.5" / "EnglishOffensiveOutput.csv")
-    off_4_eng = pd.read_csv(data_dir / "GPT4" / "offensive-english-0-gpt-4-0-1.csv")
-    off_4t_eng = pd.read_csv(
-        data_dir / "GPT4 Turbo" / "offensive-english-0-gpt-4-0125-preview-0-1.csv"
-    )
-    off_3_tur = pd.read_csv(data_dir / "GPT3.5" / "offenseval-Turkish-GPT.csv")
-    off_4_tur = pd.read_csv(data_dir / "GPT4" / "offensive-turkish-0-gpt-4-0-1.csv")
-    off_4t_tur = load_numbers_file(data_dir / "GPT4 Turbo" / "offensive-turkish-0-gpt-4-0125-preview-0-1.numbers")
-    
-    # concat the df's and fix column names
-    full_off_eng = make_clean_df(off_3_eng, off_4_eng, off_4t_eng)
-    full_off_tur = make_clean_df(off_3_tur, off_4_tur, off_4t_tur)
+    # get file names
 
-    # save the data
-    full_off_eng.to_csv(out_dir / "offensive_twitter_english.csv", index=False)
-    full_off_tur.to_csv(out_dir / "offensive_twitter_turkish.csv", index=False)
+    gpt3_files = list(data_dir.joinpath("GPT3.5/").iterdir())
+    gpt4_files = list(data_dir.joinpath("GPT4/").iterdir())
+    gpt4t_files = list(data_dir.joinpath("GPT4 Turbo/").iterdir())
+    
+    for lang in ['english', 'turkish']:
+        gpt3_df = load_lang_csv_from_list(lang, gpt3_files)
+        gpt4_df = load_lang_csv_from_list(lang, gpt4_files)
+        gpt4t_df = load_lang_csv_from_list(lang, gpt4t_files)
+
+        # make the file consistent with others
+        full_df = make_clean_df(gpt3_df, gpt4_df, gpt4t_df)
+
+        # save
+        full_df.to_csv(out_dir / f"offensive_twitter_{lang}.csv", index=False)
 
     return None
-
 
 def fix_sentiment_multiling(data_dir, out_dir) -> None:
     gpt3_sentfiles = list(data_dir.joinpath("GPT3.5/").iterdir())

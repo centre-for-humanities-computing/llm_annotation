@@ -17,7 +17,7 @@ def load_numbers_file(file_path):
 
     return df
 
-def fix_dummy_columns(df: pd.DataFrame, dummy_cols: list, new_col_name: str):
+def fix_dummy_columns(df: pd.DataFrame, dummy_cols: list, new_col_name: str) -> pd.DataFrame:
     """
     adds a column to the given dataframe which are the annotations based on the
     dummy columns specified.
@@ -39,8 +39,9 @@ def make_clean_df(df1, df2, df3=None):
     takes the dataframes and gives them consistent column names and formatting
     """
 
-    # rename columns and select only the relevant ones
+    # rename columns
     df1 = df1.rename({"gpt": "GPT3.5", "Tweet": "text", "tweet": "text"}, axis=1)
+    # select only the relevant ones
     full_df = df1.loc[:, ["text", "human", "GPT3.5"]]
 
     # because the offensive GPT4 columns are called offensive
@@ -86,26 +87,26 @@ def load_lang_csv_from_list(lang, filelist):
     find the csv file that matches the specified language from the filelist
     and return it as a pandas dataframe
     """
-    # for each file in the list, make the file name lowercase and look for the language
-    file_match = []
+    # make df None per default, so if there is no file for that lang in the list, None is returned
+    df = None
 
+    # for each file in the list, make the file name lowercase and look for the languages
     for file in filelist:
         if lang in file.name.lower():
-            file_match.append(file)
-
-    # read the file path for the matched file
-    try:
-        df = pd.read_csv(file_match[0])
-
-    # if there's no files in the list for that language, make df None
-    except IndexError:
-        df = None
-
+            # read the file path for the matched files
+            try:
+                df = pd.read_csv(file)
+            # one file is a numbers file, so if pandas fails, use that function
+            except UnicodeDecodeError: 
+                df = load_numbers_file(file)
+            # and then break out of the loop 
+            break
+            
     return df
 
 
 def change_typo_filenames(data_dir):
-    # specify file name with the typo
+    # specify file with the typo
     ibo_typo_file = (
         data_dir
         / "Sentiment"
