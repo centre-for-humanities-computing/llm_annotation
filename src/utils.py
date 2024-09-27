@@ -101,7 +101,6 @@ def load_lang_csv_from_list(lang, filelist):
     file_match = []
 
     for file in filelist:
-        print(file.name.lower())
         if lang in file.name.lower():
             file_match.append(file)
 
