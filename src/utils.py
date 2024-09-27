@@ -45,7 +45,7 @@ def fix_dummy_columns(df: pd.DataFrame, dummy_cols: list, new_col_name: str):
     return df
 
 
-def make_dfs_consistent(df1, df2, df3=None):
+def make_clean_df(df1, df2, df3=None):
     """
     takes the dataframes and gives them consistent column names and formatting
     """
@@ -90,16 +90,6 @@ def change_news_colnames(df: pd.DataFrame, model: str):
     df = df.rename(rename_dict, axis=1)
 
     return df
-
-
-def create_off_df(df1, df2, df3):
-    ful_df = df1.loc[:, "tweet":]
-    ful_df = ful_df.rename({"gpt": "GPT3.5"}, axis=1)
-
-    ful_df["GPT4"] = df2["offensive"].astype(int)
-    ful_df["GPT4-Turbo"] = df3["gpt4"].astype(int)
-
-    return ful_df
 
 
 def load_lang_csv_from_list(lang, filelist):

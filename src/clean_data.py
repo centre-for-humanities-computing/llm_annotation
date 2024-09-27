@@ -28,8 +28,8 @@ def fix_discrete_emotions(data_dir, out_dir) -> None:
     )
 
     # getting the full dfs and saving them
-    full_emo_eng = make_dfs_consistent(emo_eng_3, emo_eng_4, emo_eng_4t)
-    full_emo_ind = make_dfs_consistent(emo_ind_3, emo_ind_4)
+    full_emo_eng = make_clean_df(emo_eng_3, emo_eng_4, emo_eng_4t)
+    full_emo_ind = make_clean_df(emo_ind_3, emo_ind_4)
 
     full_emo_eng.to_csv(out_dir / "emotion_twitter_english.csv", index=False)
     full_emo_ind.to_csv(out_dir / "emotion_twitter_indonesian.csv", index=False)
@@ -123,8 +123,8 @@ def fix_offensiveness(data_dir, out_dir) -> None:
     off_3_eng = off_3_eng.rename({"text": "tweet"}, axis=1)
 
     # concat the df's and fix column names
-    full_off_eng = make_dfs_consistent(off_3_eng, off_4_eng, off_4t_eng)
-    full_off_tur = make_dfs_consistent(off_3_tur, off_4_tur, off_4t_tur)
+    full_off_eng = make_clean_df(off_3_eng, off_4_eng, off_4t_eng)
+    full_off_tur = make_clean_df(off_3_tur, off_4_tur, off_4t_tur)
 
     # save the data
     full_off_eng.to_csv(out_dir / "offensive_twitter_english.csv", index=False)
@@ -160,9 +160,9 @@ def fix_sentiment_multiling(data_dir, out_dir) -> None:
         gpt4t_df = load_lang_csv_from_list(lang, gpt4t_sentfiles)
 
         # rename the gpt3 column, and select only relevant columns
-        full_df = gpt3_df.rename({"gpt": "GPT3.5", "text": "tweet"}, axis=1).loc[
-            :, "tweet":
-        ]
+        # full_df = gpt3_df.rename({"gpt": "GPT3.5", "text": "tweet"}, axis=1).loc[
+        #     :, "tweet":
+        # ]
 
         # some gpt4 files have dummy columns instead of a gpt4 one, fix that
         if "gpt4" not in gpt4_df.columns:
@@ -170,10 +170,12 @@ def fix_sentiment_multiling(data_dir, out_dir) -> None:
                 gpt4_df, ["positive", "neutral", "negative"], "gpt4"
             )
 
-        # save gpt4 annotations
-        full_df["GPT4"] = gpt4_df["gpt4"]
-        # and gpt4-turbo
-        full_df["GPT4-Turbo"] = gpt4t_df["gpt4"]
+        full_df = make_clean_df(gpt3_df, gpt4_df, gpt4t_df)
+
+        # # save gpt4 annotations
+        # full_df["GPT4"] = gpt4_df["gpt4"]
+        # # and gpt4-turbo
+        # full_df["GPT4-Turbo"] = gpt4t_df["gpt4"]
 
         # save the file
         full_df.to_csv(out_dir / f"sentiment_twitter_{lang}.csv", index=False)
