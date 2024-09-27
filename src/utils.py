@@ -31,7 +31,7 @@ def load_discrete_emotion_dfs(data_dir):
 def fix_dummy_columns(df: pd.DataFrame, dummy_cols: list, new_col_name: str):
     """
     adds a column to the given dataframe which are the annotations based on the
-    one-hot columns specified.
+    dummy columns specified.
     the function assumes that the list is ordered so the labels' indexes
     match the numerical labels (i.e., anger is first bc it is labelled using 1)
     """

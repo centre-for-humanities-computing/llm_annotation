@@ -119,7 +119,7 @@ def fix_offensiveness(data_dir, out_dir) -> None:
     full_off_tur = make_clean_df(off_3_tur, off_4_tur, off_4t_tur)
 
     # save the data
-    full_off_eng.to_csv(out_dir / "offensive_twitter_english.csv", index=False)
+    full_off_eng.to_csv(out_dir / "offensive_twitter_english2.csv", index=False)
     full_off_tur.to_csv(out_dir / "offensive_twitter_turkish.csv", index=False)
 
     return None
@@ -162,7 +162,7 @@ def fix_sentiment_multiling(data_dir, out_dir) -> None:
         # save the file
         full_df.to_csv(out_dir / f"sentiment_twitter_{lang}.csv", index=False)
 
-        return None
+    return None
 
 
 def main():
