@@ -45,15 +45,15 @@ def fix_dummy_columns(df: pd.DataFrame, dummy_cols: list, new_col_name: str):
     return df
 
 
-def create_full_discrete_emo_df(df1, df2, df3=None):
+def make_dfs_consistent(df1, df2, df3=None):
     """
-    takes the discrete emotion dataframes and gives them consistent columns names and formatting
+    takes the dataframes and gives them consistent column names and formatting
     """
 
     # rename columns and select only the relevant ones
-    full_df = df1.rename({"gpt": "GPT3.5", "Tweet": "tweet"}, axis=1).loc[
-        :, ["tweet", "human", "GPT3.5"]
-    ]
+    full_df = df1.rename(
+        {"gpt": "GPT3.5", "Tweet": "text", "tweet": "text"}, axis=1
+    ).loc[:, ["text", "human", "GPT3.5"]]
 
     full_df["GPT4"] = df2["gpt4"]
 

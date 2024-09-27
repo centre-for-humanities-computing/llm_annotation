@@ -1,3 +1,9 @@
+"""
+TODO
+[ ] make create_full_discrete_emo_df generic -> e.g., work on the multilingual dfs, and maybe the offensive?
+
+"""
+
 import pandas as pd
 
 from pathlib import Path
@@ -22,8 +28,8 @@ def fix_discrete_emotions(data_dir, out_dir) -> None:
     )
 
     # getting the full dfs and saving them
-    full_emo_eng = create_full_discrete_emo_df(emo_eng_3, emo_eng_4, emo_eng_4t)
-    full_emo_ind = create_full_discrete_emo_df(emo_ind_3, emo_ind_4)
+    full_emo_eng = make_dfs_consistent(emo_eng_3, emo_eng_4, emo_eng_4t)
+    full_emo_ind = make_dfs_consistent(emo_ind_3, emo_ind_4)
 
     full_emo_eng.to_csv(out_dir / "emotion_twitter_english.csv", index=False)
     full_emo_ind.to_csv(out_dir / "emotion_twitter_indonesian.csv", index=False)
