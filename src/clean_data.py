@@ -1,9 +1,3 @@
-"""
-TODO
-[ ] make create_full_discrete_emo_df generic -> e.g., work on the multilingual dfs, and maybe the offensive?
-
-"""
-
 import pandas as pd
 
 from pathlib import Path
@@ -46,7 +40,7 @@ def fix_moral_foundations(data_dir, out_dir) -> None:
         df = pd.read_csv(file)
 
         # get the name of the GPT annotation in this file
-        annotation = file.name.split("-")[1].capitalize()
+        moral_name = file.name.split("-")[1].capitalize()
 
         # from the first file we get the text and the human annotations
         if i == 0:
@@ -54,10 +48,10 @@ def fix_moral_foundations(data_dir, out_dir) -> None:
 
         # if preview is in the file name, then it's GPT4-Turbo
         if "preview" in file.name:
-            col_name = f"GPT4-Turbo_{annotation}"
+            col_name = f"GPT4-Turbo_{moral_name}"
         # else it's GPT4
         else:
-            col_name = f"GPT4_{annotation}"
+            col_name = f"GPT4_{moral_name}"
 
         # use col_name to save column that starts with 'question' -> that's the GPT annotation
         full_moral_df[col_name] = df.filter(regex="^question")
@@ -120,8 +114,6 @@ def fix_offensiveness(data_dir, out_dir) -> None:
         sep=";",
     )
 
-    off_3_eng = off_3_eng.rename({"text": "tweet"}, axis=1)
-
     # concat the df's and fix column names
     full_off_eng = make_clean_df(off_3_eng, off_4_eng, off_4t_eng)
     full_off_tur = make_clean_df(off_3_tur, off_4_tur, off_4t_tur)
@@ -159,11 +151,6 @@ def fix_sentiment_multiling(data_dir, out_dir) -> None:
         gpt4_df = load_lang_csv_from_list(lang, gpt4_sentfiles)
         gpt4t_df = load_lang_csv_from_list(lang, gpt4t_sentfiles)
 
-        # rename the gpt3 column, and select only relevant columns
-        # full_df = gpt3_df.rename({"gpt": "GPT3.5", "text": "tweet"}, axis=1).loc[
-        #     :, "tweet":
-        # ]
-
         # some gpt4 files have dummy columns instead of a gpt4 one, fix that
         if "gpt4" not in gpt4_df.columns:
             gpt4_df = fix_dummy_columns(
@@ -171,11 +158,6 @@ def fix_sentiment_multiling(data_dir, out_dir) -> None:
             )
 
         full_df = make_clean_df(gpt3_df, gpt4_df, gpt4t_df)
-
-        # # save gpt4 annotations
-        # full_df["GPT4"] = gpt4_df["gpt4"]
-        # # and gpt4-turbo
-        # full_df["GPT4-Turbo"] = gpt4t_df["gpt4"]
 
         # save the file
         full_df.to_csv(out_dir / f"sentiment_twitter_{lang}.csv", index=False)
