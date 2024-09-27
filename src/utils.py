@@ -4,30 +4,6 @@ from pathlib import Path
 import re
 
 
-def load_discrete_emotion_dfs(data_dir):
-    # english files
-    emo_eng_3 = pd.read_csv(
-        Path(data_dir / "GPT3.5" / "emotion-class-english-3.5_temp=0.csv")
-    )
-    emo_eng_4 = pd.read_csv(Path(data_dir / "GPT4" / "emotion-tweets-3-gpt-4-0-1.csv"))
-    emo_eng_4t = pd.read_csv(
-        Path(
-            data_dir / "GPT4 Turbo" / "emotion-english-0-gpt-4-0125-preview-0-1 (4).csv"
-        )
-    )
-
-    # indonesian
-    emo_ind_3 = pd.read_csv(
-        Path(data_dir / "GPT3.5" / "emotion-class-Indonesian-GPT-temp=0.csv")
-    )
-
-    emo_ind_4 = pd.read_csv(
-        Path(data_dir / "GPT4" / "emotion-indonesian-0-gpt-4-0-1.csv")
-    )
-
-    return emo_eng_3, emo_eng_4, emo_eng_4t, emo_ind_3, emo_ind_4
-
-
 def fix_dummy_columns(df: pd.DataFrame, dummy_cols: list, new_col_name: str):
     """
     adds a column to the given dataframe which are the annotations based on the
