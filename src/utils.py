@@ -51,11 +51,16 @@ def make_dfs_consistent(df1, df2, df3=None):
     """
 
     # rename columns and select only the relevant ones
-    full_df = df1.rename(
-        {"gpt": "GPT3.5", "Tweet": "text", "tweet": "text"}, axis=1
-    ).loc[:, ["text", "human", "GPT3.5"]]
+    df1 = df1.rename({"gpt": "GPT3.5", "Tweet": "text", "tweet": "text"}, axis=1)
+    full_df = df1.loc[:, ["text", "human", "GPT3.5"]]
 
-    full_df["GPT4"] = df2["gpt4"]
+    # because the offensive GPT4 columns are called offensive
+    if "offensive" in df2.columns:
+        full_df["GPT4"] = df2["offensive"]
+
+    # all others are gpt4
+    else:
+        full_df["GPT4"] = df2["gpt4"]
 
     # because indonesian only has two dataframes
     if df3 is not None:
@@ -69,11 +74,14 @@ def change_news_colnames(df: pd.DataFrame, model: str):
     annotation_columns = [col for col in df.columns if col.startswith("gpt")]
 
     # create a list of new column names comprised of the model name and the annotated emotion
-    # (the regex finds the emotion from the old column name and then it is capitalized)
-    new_col_names = [
-        f"{model}_{re.match(pattern='gpt(.*?)(Turbo)?$', string=col).group(1).capitalize()}"
-        for col in annotation_columns
-    ]
+    # (the regex finds the emotion from the old column name)
+    new_col_names = []
+    for column in annotation_columns:
+        emotion = re.match(pattern="gpt(.*?)(Turbo)?$", string=column).group(1)
+
+        col_name = f"{model}_{emotion.capitalize()}"
+
+        new_col_names.append(col_name)
 
     # create a dict for renaming the columns
     rename_dict = dict(zip(annotation_columns, new_col_names))

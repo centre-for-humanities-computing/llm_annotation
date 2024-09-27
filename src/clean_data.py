@@ -123,8 +123,8 @@ def fix_offensiveness(data_dir, out_dir) -> None:
     off_3_eng = off_3_eng.rename({"text": "tweet"}, axis=1)
 
     # concat the df's and fix column names
-    full_off_eng = create_off_df(off_3_eng, off_4_eng, off_4t_eng)
-    full_off_tur = create_off_df(off_3_tur, off_4_tur, off_4t_tur)
+    full_off_eng = make_dfs_consistent(off_3_eng, off_4_eng, off_4t_eng)
+    full_off_tur = make_dfs_consistent(off_3_tur, off_4_tur, off_4t_tur)
 
     # save the data
     full_off_eng.to_csv(out_dir / "offensive_twitter_english.csv", index=False)
