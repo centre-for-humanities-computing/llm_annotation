@@ -2,7 +2,20 @@ import pandas as pd
 
 from pathlib import Path
 import re
+from numbers_parser import Document
 
+def load_numbers_file(file_path):
+    """
+    takes a path to a numbers file and returns a pandas dataframe 
+    """
+    doc = Document(file_path)
+
+    sheets = doc.sheets
+    tables = sheets[0].tables
+    data = tables[0].rows(values_only=True)
+    df = pd.DataFrame(data[1:], columns=data[0])
+
+    return df
 
 def fix_dummy_columns(df: pd.DataFrame, dummy_cols: list, new_col_name: str):
     """

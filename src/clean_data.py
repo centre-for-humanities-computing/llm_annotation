@@ -115,11 +115,8 @@ def fix_offensiveness(data_dir, out_dir) -> None:
     )
     off_3_tur = pd.read_csv(data_dir / "GPT3.5" / "offenseval-Turkish-GPT.csv")
     off_4_tur = pd.read_csv(data_dir / "GPT4" / "offensive-turkish-0-gpt-4-0-1.csv")
-    off_4t_tur = pd.read_csv(
-        data_dir / "GPT4 Turbo" / "offensive-turkish-0-gpt-4-0125-preview-0-1.csv",
-        sep=";",
-    )
-
+    off_4t_tur = load_numbers_file(data_dir / "GPT4 Turbo" / "offensive-turkish-0-gpt-4-0125-preview-0-1.numbers")
+    
     # concat the df's and fix column names
     full_off_eng = make_clean_df(off_3_eng, off_4_eng, off_4t_eng)
     full_off_tur = make_clean_df(off_3_tur, off_4_tur, off_4t_tur)
