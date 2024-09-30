@@ -2,7 +2,7 @@
 
 ## Summary
 This repo is for the project on feature first annotation using LLMs.
-In this repo there's a bash script that unzips the folder with data from this study [(link)](https://osf.io/ctgqx/) 
+In this repo there's a bash script that unzips the folder with data from this study ([link])(https://osf.io/6pnb2/) 
 and saves 16 new csv-files in clean_data/. These are the files used in the LLM annotation project
 and the analysis of performance. 
 
