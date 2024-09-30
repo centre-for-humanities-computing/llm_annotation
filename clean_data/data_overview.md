@@ -3,6 +3,7 @@
 All files (except the moral foundations and news headlines data) have the same columns: text,human,GPT3.5,GPT4,GPT4-Turbo
 
 These are, respectively, the text (tweet, reddit comment, news headline), the human annotation, the GPT3.5 annotations, the GPT4 annotations, and the GPT4-Turbo annotations. 
+All file naes are formated as such: {annotation task} _ {text medium} _ {language}.csv
 
 Some files have some quirks, they are described in depth below. 
 
